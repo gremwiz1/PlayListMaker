@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val searchButton = findViewById<Button>(R.id.search)
+        val searchButton = findViewById<Button>(R.id.buttonSearch)
         val searchButtonClickListener: View.OnClickListener = object : View.OnClickListener {
             override fun onClick(v: View?) {
                 val displayIntent = Intent(this@MainActivity, SearchActivity::class.java)
@@ -21,13 +21,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         searchButton.setOnClickListener(searchButtonClickListener)
-        val mediatekaButton = findViewById<Button>(R.id.mediateka)
+        val mediatekaButton = findViewById<Button>(R.id.buttonMediateka)
 
         mediatekaButton.setOnClickListener {
             val displayIntent = Intent(this, MediatekaActivity::class.java)
             startActivity(displayIntent)
         }
-        val settingsButton = findViewById<Button>(R.id.settings)
+        val settingsButton = findViewById<Button>(R.id.buttonSettings)
 
         settingsButton.setOnClickListener {
             val displayIntent = Intent(this, SettingsActivity::class.java)

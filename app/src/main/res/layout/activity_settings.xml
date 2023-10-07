@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".SettingsActivity"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,8 +9,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="@dimen/margin_bottom_61"
-            android:layout_marginTop="@dimen/margin_top_14">
+            android:layout_marginBottom="@dimen/margin_bottom_60"
+            android:layout_marginTop="@dimen/margin_top_12">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -43,7 +37,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginRight="@dimen/margin_right_8"
-            android:layout_marginTop="@dimen/margin_top_42">
+            android:layout_marginTop="@dimen/margin_top_40">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -62,7 +56,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginRight="@dimen/margin_right_8"
-            android:layout_marginTop="@dimen/margin_top_42">
+            android:layout_marginTop="@dimen/margin_top_40">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -80,7 +74,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginRight="@dimen/margin_right_8"
-            android:layout_marginTop="@dimen/margin_top_42">
+            android:layout_marginTop="@dimen/margin_top_40">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -94,5 +88,3 @@
                 android:src="@drawable/arrow_forward"/>
         </LinearLayout>
     </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
