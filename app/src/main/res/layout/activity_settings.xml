@@ -26,13 +26,12 @@
     </LinearLayout>
 
     <Switch
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/dark_theme"
-        android:textColor="?attr/colorOnPrimary"
-        android:textSize="@dimen/text_size_16" />
+        android:id="@+id/switchDarkMode"
+        style="@style/switchStyle"
+        android:text="@string/dark_theme" />
 
-    <LinearLayout style="@style/linearLayoutSettingsStyle">
+    <LinearLayout style="@style/linearLayoutSettingsStyle"
+        android:id="@+id/share_app">
 
         <TextView
             style="@style/textSettingsStyle"
@@ -51,12 +50,15 @@
             android:text="@string/write_support" />
 
         <ImageView
+            android:id="@+id/write_support"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:src="@drawable/write_support" />
     </LinearLayout>
 
-    <LinearLayout style="@style/linearLayoutSettingsStyle">
+    <LinearLayout
+        android:id="@+id/user_agreement"
+        style="@style/linearLayoutSettingsStyle">
 
         <TextView
             style="@style/textSettingsStyle"
