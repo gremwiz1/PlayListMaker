@@ -12,4 +12,6 @@
     <string name="share_link">https://practicum.yandex.ru/profile/android-developer/?from=new_landing_android-developer</string>
     <string name="agreement_link">https://yandex.ru/legal/practicum_offer/</string>
     <string name="message_for_rasrab">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="input_hint">Поиск</string>
+    <string name="clear">Очистить</string>
 </resources>

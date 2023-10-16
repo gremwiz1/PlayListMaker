@@ -16,4 +16,5 @@
     <dimen name="margin_top_16">16dp</dimen>
     <dimen name="margin_top_12">12dp</dimen>
     <dimen name="margin_horizontal_16">16dp</dimen>
+    <dimen name="padding_8">8dp</dimen>
 </resources>
