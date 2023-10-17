@@ -50,7 +50,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         val sharedPreferences: SharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
-        val isFirstRun: Boolean = sharedPreferences.getBoolean("isFirstRun", true)
+        val isFirstRun: Boolean = sharedPreferences.getBoolean(KEY_IS_FIRST_RUN, true)
 
         if (isFirstRun) {
             // Экран запускается впервые
@@ -59,20 +59,15 @@ class SettingsActivity : AppCompatActivity() {
             // Устанавливаем начальное состояние свитча в зависимости от текущего режима темы
             switchDarkMode.isChecked = isNightMode
             val editor: SharedPreferences.Editor = sharedPreferences.edit()
-            editor.putBoolean("isFirstRun", false)
+            editor.putBoolean(KEY_IS_FIRST_RUN, false)
             editor.apply()
         } else {
             // Экран уже запускался ранее
             // Получаем текущий режим темы
             val currentNightMode = AppCompatDelegate.getDefaultNightMode()
 
-            if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
-                // Текущая тема - темная (MODE_NIGHT_YES)
-               switchDarkMode.isChecked = true
-            } else {
-                // Текущая тема - светлая (MODE_NIGHT_NO)
-                switchDarkMode.isChecked = false
-            }
+            switchDarkMode.isChecked = currentNightMode == AppCompatDelegate.MODE_NIGHT_YES
+
         }
 
 
@@ -97,5 +92,8 @@ class SettingsActivity : AppCompatActivity() {
             shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_link))
             startActivity(shareIntent)
         }
+    }
+    companion object {
+        const val KEY_IS_FIRST_RUN = "isFirstRun"
     }
 }

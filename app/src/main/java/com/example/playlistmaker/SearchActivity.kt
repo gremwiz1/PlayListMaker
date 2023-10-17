@@ -12,19 +12,22 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 
 class SearchActivity : AppCompatActivity() {
+
+    private lateinit var inputEditText: EditText
+    private lateinit var arrowBackButton: ImageView
+    private lateinit var clearButton: ImageView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        val arrowBackButton = findViewById<ImageView>(R.id.backArrow)
+        inputEditText = findViewById(R.id.inputEditText)
+        arrowBackButton = findViewById(R.id.backArrow)
+        clearButton = findViewById(R.id.clearIcon)
 
         arrowBackButton.setOnClickListener {
             finish()
         }
-
-        val linearLayout = findViewById<LinearLayout>(R.id.container)
-        val clearButton = findViewById<ImageView>(R.id.clearIcon)
-        val inputEditText = findViewById<EditText>(R.id.inputEditText)
 
         clearButton.setOnClickListener {
             inputEditText.setText("")
@@ -62,23 +65,22 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun hideKeyboard() {
-        val inputEditText = findViewById<EditText>(R.id.inputEditText)
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         imm?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        val inputEditText = findViewById<EditText>(R.id.inputEditText)
         val inputText = inputEditText.text.toString()
-        outState.putString("inputText", inputText)
+        outState.putString(KEY_INPUT_TEXT, inputText)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        val inputText = savedInstanceState.getString("inputText")
-        val inputEditText = findViewById<EditText>(R.id.inputEditText)
+        val inputText = savedInstanceState.getString(KEY_INPUT_TEXT)
         inputEditText.setText(inputText)
     }
-
+    companion object {
+        const val KEY_INPUT_TEXT = "inputText"
+    }
 }
