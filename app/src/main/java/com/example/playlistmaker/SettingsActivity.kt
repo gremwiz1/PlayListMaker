@@ -5,11 +5,13 @@ import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Switch
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 
@@ -34,8 +36,12 @@ class SettingsActivity : AppCompatActivity() {
                 getString(R.string.message_for_rasrab))
             emailIntent.putExtra(Intent.EXTRA_TEXT,
                 getString((R.string.thanks_for_rasrab)))
-            if (emailIntent.resolveActivity(packageManager) != null) {
+                // Проверяем, есть ли доступные приложения для отправки письма
+            val activities = packageManager.queryIntentActivities(emailIntent, PackageManager.MATCH_DEFAULT_ONLY)
+            if (activities.isNotEmpty()) {
                 startActivity(emailIntent)
+            } else {
+                Toast.makeText(this, R.string.not_apps_for_sent_email, Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -89,8 +95,14 @@ class SettingsActivity : AppCompatActivity() {
         val shareAppButton = findViewById<LinearLayout>(R.id.share_app)
         shareAppButton.setOnClickListener() {
             val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.type = "text/plain"
             shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_link))
-            startActivity(shareIntent)
+            // Проверка на наличие доступных Activity
+            if (shareIntent.resolveActivity(packageManager) != null) {
+                startActivity(shareIntent)
+            } else {
+                Toast.makeText(this, R.string.not_apps_for_share_link, Toast.LENGTH_SHORT).show()
+            }
         }
     }
     companion object {
