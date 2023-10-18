@@ -14,6 +14,7 @@
     <string name="message_for_rasrab">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="input_hint">Поиск</string>
     <string name="clear">Очистить</string>
-    <string name="not_apps_for_sent_email">"Нет доступных приложений для отправки письма"</string>
-    <string name="not_apps_for_share_link">"Нет доступных приложений чтобы поделиться ссылкой!"</string>
+    <string name="not_apps_for_sent_email">Нет доступных приложений для отправки письма</string>
+    <string name="not_apps_for_share_link">Нет доступных приложений чтобы поделиться ссылкой!</string>
+    <string name="url_mail">mailto:</string>
 </resources>

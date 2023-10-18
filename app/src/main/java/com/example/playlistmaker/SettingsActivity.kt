@@ -2,10 +2,10 @@ package com.example.playlistmaker
 
 import android.annotation.SuppressLint
 import android.app.UiModeManager
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.widget.ImageView
@@ -30,20 +30,18 @@ class SettingsActivity : AppCompatActivity() {
         val writeSupportButton = findViewById<ImageView>(R.id.write_support)
         writeSupportButton.setOnClickListener {
             val emailIntent = Intent(Intent.ACTION_SENDTO)
-            emailIntent.data = Uri.parse("mailto:")
+            emailIntent.data = Uri.parse(getString(R.string.url_mail))
             emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.eamil_rasrab)))
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT,
-                getString(R.string.message_for_rasrab))
-            emailIntent.putExtra(Intent.EXTRA_TEXT,
-                getString((R.string.thanks_for_rasrab)))
-                // Проверяем, есть ли доступные приложения для отправки письма
-            val activities = packageManager.queryIntentActivities(emailIntent, PackageManager.MATCH_DEFAULT_ONLY)
-            if (activities.isNotEmpty()) {
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.message_for_rasrab))
+            emailIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.thanks_for_rasrab))
+
+            try {
                 startActivity(emailIntent)
-            } else {
-                Toast.makeText(this, R.string.not_apps_for_sent_email, Toast.LENGTH_SHORT).show()
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(this, getString(R.string.not_apps_for_sent_email), Toast.LENGTH_SHORT).show()
             }
         }
+
 
 
         val switchDarkMode = findViewById<Switch>(R.id.switchDarkMode)
@@ -101,7 +99,7 @@ class SettingsActivity : AppCompatActivity() {
             if (shareIntent.resolveActivity(packageManager) != null) {
                 startActivity(shareIntent)
             } else {
-                Toast.makeText(this, R.string.not_apps_for_share_link, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.not_apps_for_share_link), Toast.LENGTH_SHORT).show()
             }
         }
     }
