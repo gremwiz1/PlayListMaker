@@ -3,8 +3,9 @@
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:layout_height="@dimen/heigt_61dp"
-    android:gravity="center_vertical|start">
+    android:layout_height="@dimen/heigt_60dp"
+    android:gravity="center_vertical|start"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <ImageView
         android:layout_width="@dimen/size_image_45"
@@ -29,6 +30,7 @@
             android:fontFamily="@font/ys_display_regular"
             android:textSize="@dimen/text_size_16"
             android:textColor="?attr/colorOnPrimary"
+            tools:text="Track Name"
             />
 
         <LinearLayout
@@ -45,7 +47,8 @@
                 android:fontFamily="@font/ys_display_regular"
                 android:textSize="@dimen/text_size_11"
                 android:textColor="?attr/ellipse"
-                android:maxLines="1"/>
+                android:maxLines="1"
+                tools:text="Artist Name"/>
 
             <ImageView
                 android:layout_width="@dimen/size_ellipse"
@@ -63,7 +66,8 @@
                 android:fontFamily="@font/ys_display_regular"
                 android:textSize="@dimen/text_size_11"
                 android:textColor="?attr/ellipse"
-                android:maxLines="1"/>
+                android:maxLines="1"
+                tools:text="Duration Track"/>
 
         </LinearLayout>
     </LinearLayout>

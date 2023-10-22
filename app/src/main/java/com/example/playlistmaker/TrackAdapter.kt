@@ -19,7 +19,5 @@ class TrackAdapter(private val trackList: ArrayList<Track>) :
 
     }
 
-    override fun getItemCount(): Int {
-        return trackList.size
-    }
+    override fun getItemCount() = trackList.size
 }

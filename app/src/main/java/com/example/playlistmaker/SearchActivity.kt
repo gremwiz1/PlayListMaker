@@ -17,8 +17,6 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var inputEditText: EditText
     private lateinit var arrowBackButton: ImageView
     private lateinit var clearButton: ImageView
-    private lateinit var trackList: RecyclerView
-    private lateinit var trackListAdapter: TrackAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +64,7 @@ class SearchActivity : AppCompatActivity() {
         mockArray.add(Track("Sweet Child O'Mine","Guns N' Roses","5:03","https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg"))
 
         val trackAdapter = TrackAdapter(mockArray)
-        trackList = findViewById<RecyclerView>(R.id.trackList)
+        val trackList = findViewById<RecyclerView>(R.id.trackList)
         trackList.layoutManager = LinearLayoutManager(this)
 
         trackList.adapter = trackAdapter
@@ -93,11 +91,11 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        val inputText = savedInstanceState.getString(KEY_INPUT_TEXT)
+       val inputText = savedInstanceState.getString(KEY_INPUT_TEXT)
         inputEditText.setText(inputText)
     }
 
     companion object {
-        const val KEY_INPUT_TEXT = "inputText"
+       private val KEY_INPUT_TEXT = "inputText"
     }
 }
