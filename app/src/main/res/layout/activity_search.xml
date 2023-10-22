@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_top_12"
-        android:layout_marginBottom="@dimen/margin_bottom_60"
+        android:layout_marginBottom="@dimen/margin_bottom_16"
         android:orientation="horizontal">
 
         <ImageView
@@ -31,6 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/margin_right_16"
+        android:layout_marginBottom="@dimen/margin_bottom_16"
        >
 
         <EditText

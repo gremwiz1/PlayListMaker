@@ -13,28 +13,44 @@
         app:cornerRadius="@dimen/corner_radius_8"/>
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical|start"
+        android:orientation="vertical"
+        android:layout_marginStart="@dimen/margin_left_8">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/nameTrack"/>
+            android:id="@+id/nameTrack"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:fontFamily="@font/ys_display_regular"
+            android:textSize="@dimen/text_size_16"
+            android:textColor="?attr/colorOnPrimary"
+            />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical|start">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/nameArtist"/>
+                android:id="@+id/nameArtist"
+                android:ellipsize="end"
+                android:fontFamily="@font/ys_display_regular"
+                android:textSize="@dimen/text_size_11"
+                android:textColor="?attr/ellipse"
+                android:maxLines="1"/>
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/size_ellipse"
+                android:layout_height="@dimen/size_ellipse"
+                android:layout_marginHorizontal="@dimen/margin_horizontal_8"
                 android:src="@drawable/ellipse_1"
                 android:gravity="center_vertical|start"
                 />
@@ -42,7 +58,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/durationTrack"/>
+                android:id="@+id/durationTrack"
+                android:ellipsize="end"
+                android:fontFamily="@font/ys_display_regular"
+                android:textSize="@dimen/text_size_11"
+                android:textColor="?attr/ellipse"
+                android:maxLines="1"/>
 
         </LinearLayout>
     </LinearLayout>

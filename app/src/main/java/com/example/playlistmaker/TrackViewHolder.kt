@@ -1,6 +1,5 @@
 package com.example.playlistmaker
 
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,7 +14,6 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val nameArtist: TextView = itemView.findViewById(R.id.nameArtist)
 
     fun bind(model: Track) {
-        Log.d("dddddd", model.trackName)
         nameTrack.text = model.trackName
         durationTrack.text = model.trackTime
         nameArtist.text = model.artistName
