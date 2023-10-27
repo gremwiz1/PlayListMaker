@@ -13,4 +13,7 @@ class TrackResponseBody(
     val resultCount: Int,
     var results: ArrayList<Track>,
 ) {
+    override fun toString(): String {
+        return "TrackResponseBody(results=$results )"
+    }
 }
