@@ -71,6 +71,15 @@ class SearchActivity : AppCompatActivity() {
             problemLinearLayout.visibility = View.GONE
         }
 
+        fun showProblemWithInternet() {
+            problemText.text = getString(R.string.textProblemWithInternet)
+            refreshButton.visibility = View.VISIBLE
+            problemImage.setImageResource(R.drawable.problem_with_internet)
+            problemImage.visibility = View.VISIBLE
+            problemText.visibility = View.VISIBLE
+            problemLinearLayout.visibility = View.VISIBLE
+        }
+
         clearButton.setOnClickListener {
             inputEditText.setText("")
             hideKeyboard()
@@ -121,12 +130,12 @@ class SearchActivity : AppCompatActivity() {
                                     problemLinearLayout.visibility = View.VISIBLE
                                 }
                             } else {
-
+                                showProblemWithInternet()
                             }
                         }
 
                         override fun onFailure(call: Call<TrackResponseBody>, t: Throwable) {
-
+                            showProblemWithInternet()
                         }
                     })
             }

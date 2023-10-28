@@ -20,4 +20,5 @@
     <string name="base_url_itunes">https://itunes.apple.com</string>
     <string name="refresh">Обновить</string>
     <string name="textNotFound">Ничего не нашлось</string>
+    <string name="textProblemWithInternet">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
 </resources>

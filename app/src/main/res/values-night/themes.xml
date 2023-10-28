@@ -14,5 +14,6 @@
         <!-- Customize your theme here. -->
         <item name="ellipse">@color/white</item>
         <item name="notFoundColor">@color/white</item>
+        <item name="refreshButtonTextColor">@color/dark_blue</item>
     </style>
 </resources>
