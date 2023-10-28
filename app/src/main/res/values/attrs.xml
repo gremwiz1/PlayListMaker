@@ -2,5 +2,6 @@
 <resources>
     <declare-styleable name="MyCustomView">
         <attr name="ellipse" format="color"/>
+        <attr name="notFoundColor" format="color"/>
     </declare-styleable>
 </resources>

@@ -13,5 +13,6 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="ellipse">@color/gray</item>
+        <item name="notFoundColor">@color/dark_blue</item>
     </style>
 </resources>

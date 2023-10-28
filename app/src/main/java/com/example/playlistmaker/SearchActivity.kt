@@ -4,12 +4,14 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +26,10 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var inputEditText: EditText
     private lateinit var arrowBackButton: ImageView
     private lateinit var clearButton: ImageView
+    private lateinit var problemImage: ImageView
+    private lateinit var problemText: TextView
+    private lateinit var refreshButton: Button
+    private lateinit var problemLinearLayout: LinearLayout
     private lateinit var arrayTrack: ArrayList<Track>
     private lateinit var retrofit: Retrofit
     private lateinit var iTunesApiService: ITunesApiService
@@ -42,14 +48,35 @@ class SearchActivity : AppCompatActivity() {
         inputEditText = findViewById(R.id.inputEditText)
         arrowBackButton = findViewById(R.id.backArrow)
         clearButton = findViewById(R.id.clearIcon)
+        problemLinearLayout = findViewById(R.id.problemLinearLayout)
+        problemImage = findViewById(R.id.problemImage)
+        problemText = findViewById(R.id.problemText)
+        refreshButton = findViewById(R.id.refreshButton)
+
+        arrayTrack = ArrayList<Track>()
+        val trackAdapter = TrackAdapter(arrayTrack)
+        val trackList = findViewById<RecyclerView>(R.id.trackList)
+        trackList.layoutManager = LinearLayoutManager(this)
+
+        trackList.adapter = trackAdapter
 
         arrowBackButton.setOnClickListener {
             finish()
         }
 
+        fun hideProblemsElement() {
+            problemImage.visibility = View.GONE
+            problemText.visibility = View.GONE
+            refreshButton.visibility = View.GONE
+            problemLinearLayout.visibility = View.GONE
+        }
+
         clearButton.setOnClickListener {
             inputEditText.setText("")
             hideKeyboard()
+            hideProblemsElement()
+            arrayTrack.clear()
+            trackAdapter.notifyDataSetChanged()
         }
 
         val simpleTextWatcher = object : TextWatcher {
@@ -70,12 +97,6 @@ class SearchActivity : AppCompatActivity() {
                 // empty
             }
         }
-        arrayTrack = ArrayList<Track>()
-        val trackAdapter = TrackAdapter(arrayTrack)
-        val trackList = findViewById<RecyclerView>(R.id.trackList)
-        trackList.layoutManager = LinearLayoutManager(this)
-
-        trackList.adapter = trackAdapter
 
         fun searchSongs() {
             if (inputEditText.text.toString().isNotEmpty()) {
@@ -86,13 +107,18 @@ class SearchActivity : AppCompatActivity() {
                             call: Call<TrackResponseBody>,
                             response: Response<TrackResponseBody>,
                         ) {
-                            Log.d("SearchActivity", "Response body: ${response.body()}")
                             if (response.code() == 200) {
                                 if (response.body()?.results?.isNotEmpty() == true) {
                                     arrayTrack.addAll(response.body()?.results!!)
+                                    hideProblemsElement()
                                     trackAdapter.notifyDataSetChanged()
                                 } else {
-
+                                    problemText.text = getString(R.string.textNotFound)
+                                    refreshButton.visibility = View.GONE
+                                    problemImage.setImageResource(R.drawable.not_found_tracks)
+                                    problemImage.visibility = View.VISIBLE
+                                    problemText.visibility = View.VISIBLE
+                                    problemLinearLayout.visibility = View.VISIBLE
                                 }
                             } else {
 
@@ -112,6 +138,10 @@ class SearchActivity : AppCompatActivity() {
                 searchSongs()
             }
             false
+        }
+
+        refreshButton.setOnClickListener() {
+            searchSongs()
         }
     }
 
