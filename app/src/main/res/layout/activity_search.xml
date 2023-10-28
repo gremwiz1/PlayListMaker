@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginStart="@dimen/margin_left_16"
     android:background="?attr/colorPrimary"
     android:orientation="vertical">
@@ -25,37 +25,79 @@
             android:textColor="?attr/colorPrimaryVariant"
             android:textSize="@dimen/text_size" />
     </LinearLayout>
+
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginRight="@dimen/margin_right_16"
-        android:layout_marginBottom="@dimen/margin_bottom_16"
-       >
+        android:layout_marginBottom="@dimen/margin_bottom_16">
 
         <EditText
             android:id="@+id/inputEditText"
+            style="@style/editSearchText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawablePadding="@dimen/padding_12"
-            style="@style/editSearchText"
             android:background="@drawable/edit_text_background"
-            />
+            android:drawablePadding="@dimen/padding_12"
+            android:imeOptions="actionDone"
+            android:singleLine="true" />
 
         <ImageView
             android:id="@+id/clearIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|end"
-            android:src="@drawable/cancel_button"
-            android:visibility="gone"
             android:layout_marginHorizontal="@dimen/margin_horizontal_16"
-            android:contentDescription="@string/clear"/>
+            android:contentDescription="@string/clear"
+            android:src="@drawable/cancel_button"
+            android:visibility="gone" />
     </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/problemLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/problemImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/problemText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ys_display_medium"
+            android:gravity="center"
+            android:textColor="?attr/notFoundColor"
+            android:textSize="@dimen/text_size_19"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/refreshButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="?attr/notFoundColor"
+            android:text="@string/refresh"
+            android:textColor="?attr/refreshButtonTextColor"
+            android:textSize="@dimen/text_size_14"
+            android:fontFamily="@font/ys_display_medium"
+            android:layout_marginTop="@dimen/margin_top_24"
+            app:cornerRadius = "@dimen/corner_radius_56"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/trackList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
 </LinearLayout>
