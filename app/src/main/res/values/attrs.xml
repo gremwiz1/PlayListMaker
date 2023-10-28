@@ -4,5 +4,6 @@
         <attr name="ellipse" format="color"/>
         <attr name="notFoundColor" format="color"/>
         <attr name="refreshButtonTextColor" format="color"/>
+        <attr name="colorSwitchTheme" format="color"/>
     </declare-styleable>
 </resources>

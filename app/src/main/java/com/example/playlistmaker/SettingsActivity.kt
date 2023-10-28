@@ -14,6 +14,8 @@ import android.widget.Switch
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.playlistmaker.App.Companion.IS_DARK_THEME
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -44,7 +46,7 @@ class SettingsActivity : AppCompatActivity() {
 
 
 
-        val switchDarkMode = findViewById<Switch>(R.id.switchDarkMode)
+        val switchDarkMode = findViewById<SwitchMaterial>(R.id.themeSwitcher)
 
         // Функция для определения текущего режима темы устройства
         fun isNightModeEnabled(context: Context): Boolean {
@@ -76,11 +78,11 @@ class SettingsActivity : AppCompatActivity() {
 
 
         switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
+            sharedPreferences.edit()
+                .putBoolean(IS_DARK_THEME, isChecked)
+                .apply()
+            (applicationContext as App).switchTheme(isChecked)
+
         }
 
         val agreementButton = findViewById<LinearLayout>(R.id.user_agreement)

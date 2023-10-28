@@ -25,13 +25,18 @@
             android:textSize="@dimen/text_size" />
     </LinearLayout>
 
-    <Switch
-        android:id="@+id/switchDarkMode"
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/themeSwitcher"
         style="@style/switchStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
         android:text="@string/dark_theme" />
 
-    <LinearLayout style="@style/linearLayoutSettingsStyle"
-        android:id="@+id/share_app">
+    <LinearLayout
+        android:id="@+id/share_app"
+        style="@style/linearLayoutSettingsStyle">
 
         <TextView
             style="@style/textSettingsStyle"

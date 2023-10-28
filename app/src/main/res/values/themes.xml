@@ -15,5 +15,6 @@
         <item name="ellipse">@color/gray</item>
         <item name="notFoundColor">@color/dark_blue</item>
         <item name="refreshButtonTextColor">@color/white</item>
+        <item name="colorSwitchTheme">@color/black</item>
     </style>
 </resources>
