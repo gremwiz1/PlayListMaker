@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -28,7 +29,9 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var clearButton: ImageView
     private lateinit var problemImage: ImageView
     private lateinit var problemText: TextView
+    private lateinit var youSearchText: TextView
     private lateinit var refreshButton: Button
+    private lateinit var clearHistoryButton: Button
     private lateinit var problemLinearLayout: LinearLayout
     private lateinit var arrayTrack: ArrayList<Track>
     private lateinit var retrofit: Retrofit
@@ -52,9 +55,16 @@ class SearchActivity : AppCompatActivity() {
         problemImage = findViewById(R.id.problemImage)
         problemText = findViewById(R.id.problemText)
         refreshButton = findViewById(R.id.refreshButton)
+        youSearchText = findViewById(R.id.you_search)
+        clearHistoryButton = findViewById(R.id.clear_history)
 
+        val sharedPreferences: SharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
+        val searchHistory = SearchHistory(sharedPreferences)
         arrayTrack = ArrayList<Track>()
-        val trackAdapter = TrackAdapter(arrayTrack)
+        val trackAdapter = TrackAdapter(arrayTrack) { clickedTrack ->
+            searchHistory.addTrackInHistory(clickedTrack)
+        }
+
         val trackList = findViewById<RecyclerView>(R.id.trackList)
         trackList.layoutManager = LinearLayoutManager(this)
 
@@ -62,6 +72,17 @@ class SearchActivity : AppCompatActivity() {
 
         arrowBackButton.setOnClickListener {
             finish()
+        }
+
+        fun showHistoryTracks() {
+            val historyTracks = searchHistory.getListHistoryTracks()
+            if (historyTracks.size > 0) {
+                arrayTrack.clear()
+                arrayTrack.addAll(historyTracks)
+                trackAdapter.notifyDataSetChanged()
+                clearHistoryButton.visibility = View.VISIBLE
+                youSearchText.visibility = View.VISIBLE
+            }
         }
 
         fun hideProblemsElement() {
@@ -86,6 +107,15 @@ class SearchActivity : AppCompatActivity() {
             hideProblemsElement()
             arrayTrack.clear()
             trackAdapter.notifyDataSetChanged()
+            showHistoryTracks()
+        }
+
+        clearHistoryButton.setOnClickListener {
+            searchHistory.clearListHistory()
+            arrayTrack.clear()
+            trackAdapter.notifyDataSetChanged()
+            clearHistoryButton.visibility = View.GONE
+            youSearchText.visibility = View.GONE
         }
 
         val simpleTextWatcher = object : TextWatcher {
@@ -96,8 +126,15 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s.isNullOrEmpty()) {
                     // linearLayout.setBackgroundColor(getColor(R.color.prime_neutral))
+                    if (inputEditText.hasFocus() && searchHistory.getListHistoryTracks().size != 0) {
+                        showHistoryTracks()
+                    }
                 } else {
                     val input = s.toString()
+                    arrayTrack.clear()
+                    trackAdapter.notifyDataSetChanged()
+                    clearHistoryButton.visibility = View.GONE
+                    youSearchText.visibility = View.GONE
                 }
                 clearButton.visibility = clearButtonVisibility(s)
             }
@@ -148,7 +185,15 @@ class SearchActivity : AppCompatActivity() {
             }
             false
         }
-
+        inputEditText.setOnFocusChangeListener { view, hasFocus ->
+            if (hasFocus && inputEditText.text.isEmpty() && searchHistory.getListHistoryTracks().size != 0) {
+                showHistoryTracks()
+            } else {
+                clearHistoryButton.visibility = View.GONE
+                youSearchText.visibility = View.GONE
+                arrayTrack.clear()
+            }
+        }
         refreshButton.setOnClickListener() {
             searchSongs()
         }
