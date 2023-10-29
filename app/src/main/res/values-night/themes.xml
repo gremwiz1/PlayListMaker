@@ -16,5 +16,6 @@
         <item name="notFoundColor">@color/white</item>
         <item name="refreshButtonTextColor">@color/dark_blue</item>
         <item name="colorSwitchTheme">@color/white</item>
+        <item name="colorHintEditText">@color/black</item>
     </style>
 </resources>

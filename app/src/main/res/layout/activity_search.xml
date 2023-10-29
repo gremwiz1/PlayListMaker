@@ -102,7 +102,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:orientation="vertical">
 
             <TextView
@@ -128,6 +127,7 @@
                 android:id="@+id/clear_history"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/margin_top_24"
                 android:backgroundTint="?attr/colorOnPrimary"
                 android:fontFamily="@font/ys_display_medium"
