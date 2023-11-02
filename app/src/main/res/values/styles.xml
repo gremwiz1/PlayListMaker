@@ -52,7 +52,7 @@
         <item name="android:maxLines">1</item>
         <item name="android:inputType">text</item>
         <item name="android:textColor">@color/black</item>
-        <item name="android:textColorHint">@color/black</item>
+        <item name="android:textColorHint">?attr/colorHintEditText</item>
         <item name="android:drawableTint">@color/black</item>
         <item name="android:background">@color/light_gray</item>
         <item name="android:drawableStart">@drawable/search_icon</item>

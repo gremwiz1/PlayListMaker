@@ -20,11 +20,18 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         durationTrack.text =
             SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis.toInt())
         nameArtist.text = model.artistName
-        Glide.with(itemView)
-            .load(model.artworkUrl100)
-            .placeholder(R.drawable.placeholder)
-            .fitCenter()
-            .transform(RoundedCorners(10))
-            .into(imageTrack)
+        if (model.artworkUrl100 != null) {
+            Glide.with(itemView)
+                .load(model.artworkUrl100)
+                .fitCenter()
+                .transform(RoundedCorners(10))
+                .into(imageTrack)
+        } else {
+            Glide.with(itemView)
+                .load(R.drawable.placeholder)
+                .fitCenter()
+                .transform(RoundedCorners(10))
+                .into(imageTrack)
+        }
     }
 }

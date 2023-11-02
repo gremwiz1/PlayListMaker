@@ -25,11 +25,10 @@
         <item name="android:src">@drawable/dark_mode</item>
     </style>
     <style name="switchStyle">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">?attr/colorOnPrimary</item>
         <item name="android:textSize">@dimen/text_size_16</item>
         <item name="android:thumbTint">@color/cornflower_blue</item>
+        <item name="thumbTint">?attr/colorSwitchTheme</item>
     </style>
     <style name="editSearchText">
         <item name="android:hint">@string/input_hint</item>
