@@ -40,7 +40,6 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
             .apply()
 
         val gson = Gson()
-        val trackJson = gson.toJson(track)
         val intent = Intent(context, MediatekaActivity::class.java)
         intent.putExtra("TrackExtra", gson.toJson(track))
         context.startActivity(intent)
