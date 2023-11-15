@@ -62,7 +62,7 @@ class SearchActivity : AppCompatActivity() {
         val searchHistory = SearchHistory(sharedPreferences)
         arrayTrack = ArrayList<Track>()
         val trackAdapter = TrackAdapter(arrayTrack) { clickedTrack ->
-            searchHistory.addTrackInHistory(clickedTrack)
+            searchHistory.addTrackInHistory(this, clickedTrack)
         }
 
         val trackList = findViewById<RecyclerView>(R.id.trackList)

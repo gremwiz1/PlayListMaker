@@ -1,5 +1,7 @@
 package com.example.playlistmaker
 
+import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -18,7 +20,7 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
         }
     }
 
-    fun addTrackInHistory(track: Track) {
+    fun addTrackInHistory(context: Context, track: Track) {
         val currentHistory = getHistoryTracks()
 
         // Удаляем трек, если он уже есть в истории
@@ -36,6 +38,12 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
         sharedPreferences.edit()
             .putString(HISTORY_ARRAY_TRAKS, gson.toJson(currentHistory))
             .apply()
+
+        val gson = Gson()
+        val trackJson = gson.toJson(track)
+        val intent = Intent(context, MediatekaActivity::class.java)
+        intent.putExtra("TrackExtra", gson.toJson(track))
+        context.startActivity(intent)
     }
 
     fun getListHistoryTracks(): ArrayList<Track> {
