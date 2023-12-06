@@ -71,6 +71,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         if (urlImage != null) {
             Glide.with(this)
                 .load(urlImage.replaceAfterLast('/', "512x512bb.jpg"))
+                .placeholder(R.drawable.placeholder)
                 .fitCenter()
                 .transform(RoundedCorners(10))
                 .into(imageTrack)
