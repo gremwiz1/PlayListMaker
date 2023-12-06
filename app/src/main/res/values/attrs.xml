@@ -6,5 +6,6 @@
         <attr name="refreshButtonTextColor" format="color"/>
         <attr name="colorSwitchTheme" format="color"/>
         <attr name="colorHintEditText" format="color"/>
+        <attr name="colorFillPlayButton" format="color"/>
     </declare-styleable>
 </resources>

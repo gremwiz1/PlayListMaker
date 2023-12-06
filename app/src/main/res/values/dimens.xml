@@ -2,9 +2,11 @@
 <resources>
     <dimen name="text_size">22sp</dimen>
     <dimen name="text_size_11">11sp</dimen>
+    <dimen name="text_size_13">13sp</dimen>
     <dimen name="text_size_14">14sp</dimen>
     <dimen name="text_size_16">16sp</dimen>
     <dimen name="text_size_19">19sp</dimen>
+    <dimen name="margin_left_minus_8">-8dp</dimen>
     <dimen name="margin_left_8">8dp</dimen>
     <dimen name="margin_left_16">16dp</dimen>
     <dimen name="margin_right_8">8dp</dimen>
@@ -19,6 +21,7 @@
     <dimen name="margin_bottom_24">24dp</dimen>
     <dimen name="margin_bottom_28">28dp</dimen>
     <dimen name="margin_bottom_60">60dp</dimen>
+    <dimen name="margin_top_4">4dp</dimen>
     <dimen name="margin_top_24">24dp</dimen>
     <dimen name="margin_top_40">40dp</dimen>
     <dimen name="margin_top_16">16dp</dimen>

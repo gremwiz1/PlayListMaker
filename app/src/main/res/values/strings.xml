@@ -23,4 +23,16 @@
     <string name="textProblemWithInternet">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
     <string name="you_search">Вы искали</string>
     <string name="clear_history">Очистить историю</string>
+    <string name="yesterday_remastered_2009">Yesterday (Remastered 2009)</string>
+    <string name="the_beatles">The Beatles</string>
+    <string name="_0_30">0:30</string>
+    <string name="duration">Длительность</string>
+    <string name="_5_35">5:35</string>
+    <string name="album">Альбом</string>
+    <string name="year">Год</string>
+    <string name="_1965">1965</string>
+    <string name="genre">Жанр</string>
+    <string name="rock">Rock</string>
+    <string name="country">Страна</string>
+    <string name="greatBritain">Великобритания</string>
 </resources>
