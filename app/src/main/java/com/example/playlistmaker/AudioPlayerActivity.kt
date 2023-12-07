@@ -44,8 +44,6 @@ class AudioPlayerActivity : AppCompatActivity() {
             mediaPlayerControl()
             if(mediaPlayerState == State.PLAYING) {
                 refreshText()
-            } else if(mediaPlayerState == State.PREPARED) {
-                timeToPlay.setText("00:00")
             }
         }
     }
@@ -110,24 +108,29 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun preparePlayer(url: String) {
+        timeToPlay.setText("00:00")
+        buttonPlay.setImageResource(R.drawable.button_play)
         mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
             buttonPlay.isEnabled = true
             mediaPlayerState = State.PREPARED
         }
+
         mediaPlayer.setOnCompletionListener {
-            // тут нужно поменять картинку кнопки
             mediaPlayerState = State.PREPARED
+            buttonPlay.setImageResource(R.drawable.button_play)
         }
     }
 
     fun startMediaPlayer() {
+        buttonPlay.setImageResource(R.drawable.button_pause)
         mediaPlayer.start()
         mediaPlayerState = State.PLAYING
     }
 
     fun pauseMediaPlayer() {
+        buttonPlay.setImageResource(R.drawable.button_play)
         mediaPlayer.pause()
         mediaPlayerState = State.PAUSED
     }
@@ -172,6 +175,6 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
     companion object {
         private val TRACK = "TRACK"
-        private const val REFRESH_LIST_DELAY_MILLIS = 1_000L
+        private const val REFRESH_LIST_DELAY_MILLIS = 500L
     }
 }
