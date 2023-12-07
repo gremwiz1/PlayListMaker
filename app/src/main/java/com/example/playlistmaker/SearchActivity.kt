@@ -2,6 +2,7 @@ package com.example.playlistmaker
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.opengl.Visibility
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,6 +15,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,6 +44,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchRunnable: Runnable
     private lateinit var trackAdapter: TrackAdapter
     private var isClickAllowed = true
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +57,7 @@ class SearchActivity : AppCompatActivity() {
 
         iTunesApiService = retrofit.create(ITunesApiService::class.java)
 
+        progressBar = findViewById(R.id.progressBar)
         inputEditText = findViewById(R.id.inputEditText)
         arrowBackButton = findViewById(R.id.backArrow)
         clearButton = findViewById(R.id.clearIcon)
@@ -195,6 +199,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun searchSongs() {
         if (inputEditText.text.toString().isNotEmpty()) {
+            progressBar.visibility = View.VISIBLE
             arrayTrack.clear()
             iTunesApiService.searchSongs(inputEditText.text.toString())
                 .enqueue(object : Callback<TrackResponseBody> {
@@ -224,6 +229,7 @@ class SearchActivity : AppCompatActivity() {
                         showProblemWithInternet()
                     }
                 })
+            progressBar.visibility = View.GONE
         }
     }
 
