@@ -3,6 +3,8 @@ package com.example.playlistmaker
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -36,6 +38,10 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var arrayTrack: ArrayList<Track>
     private lateinit var retrofit: Retrofit
     private lateinit var iTunesApiService: ITunesApiService
+    private var mainThreadHandler: Handler? = null
+    private lateinit var searchRunnable: Runnable
+    private lateinit var trackAdapter: TrackAdapter
+    private var isClickAllowed = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,8 +67,12 @@ class SearchActivity : AppCompatActivity() {
         val sharedPreferences: SharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
         val searchHistory = SearchHistory(sharedPreferences)
         arrayTrack = ArrayList<Track>()
-        val trackAdapter = TrackAdapter(arrayTrack) { clickedTrack ->
-            searchHistory.addTrackInHistory(this, clickedTrack)
+        trackAdapter = TrackAdapter(arrayTrack) { clickedTrack ->
+            run {
+                if (clickDebounce()) {
+                    searchHistory.addTrackInHistory(this, clickedTrack)
+                }
+            }
         }
 
         val trackList = findViewById<RecyclerView>(R.id.trackList)
@@ -83,22 +93,6 @@ class SearchActivity : AppCompatActivity() {
                 clearHistoryButton.visibility = View.VISIBLE
                 youSearchText.visibility = View.VISIBLE
             }
-        }
-
-        fun hideProblemsElement() {
-            problemImage.visibility = View.GONE
-            problemText.visibility = View.GONE
-            refreshButton.visibility = View.GONE
-            problemLinearLayout.visibility = View.GONE
-        }
-
-        fun showProblemWithInternet() {
-            problemText.text = getString(R.string.textProblemWithInternet)
-            refreshButton.visibility = View.VISIBLE
-            problemImage.setImageResource(R.drawable.problem_with_internet)
-            problemImage.visibility = View.VISIBLE
-            problemText.visibility = View.VISIBLE
-            problemLinearLayout.visibility = View.VISIBLE
         }
 
         clearButton.setOnClickListener {
@@ -135,6 +129,7 @@ class SearchActivity : AppCompatActivity() {
                     trackAdapter.notifyDataSetChanged()
                     clearHistoryButton.visibility = View.GONE
                     youSearchText.visibility = View.GONE
+                    searchDebounce()
                 }
                 clearButton.visibility = clearButtonVisibility(s)
             }
@@ -144,39 +139,8 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        fun searchSongs() {
-            if (inputEditText.text.toString().isNotEmpty()) {
-                arrayTrack.clear()
-                iTunesApiService.searchSongs(inputEditText.text.toString())
-                    .enqueue(object : Callback<TrackResponseBody> {
-                        override fun onResponse(
-                            call: Call<TrackResponseBody>,
-                            response: Response<TrackResponseBody>,
-                        ) {
-                            if (response.code() == 200) {
-                                if (response.body()?.results?.isNotEmpty() == true) {
-                                    arrayTrack.addAll(response.body()?.results!!)
-                                    hideProblemsElement()
-                                    trackAdapter.notifyDataSetChanged()
-                                } else {
-                                    problemText.text = getString(R.string.textNotFound)
-                                    refreshButton.visibility = View.GONE
-                                    problemImage.setImageResource(R.drawable.not_found_tracks)
-                                    problemImage.visibility = View.VISIBLE
-                                    problemText.visibility = View.VISIBLE
-                                    problemLinearLayout.visibility = View.VISIBLE
-                                }
-                            } else {
-                                showProblemWithInternet()
-                            }
-                        }
-
-                        override fun onFailure(call: Call<TrackResponseBody>, t: Throwable) {
-                            showProblemWithInternet()
-                        }
-                    })
-            }
-        }
+        searchRunnable = Runnable { searchSongs() }
+        mainThreadHandler = Handler(Looper.getMainLooper())
         //добавляем созданный simpleTextWatcher к EditText
         inputEditText.addTextChangedListener(simpleTextWatcher)
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
@@ -197,6 +161,11 @@ class SearchActivity : AppCompatActivity() {
         refreshButton.setOnClickListener() {
             searchSongs()
         }
+    }
+
+    private fun searchDebounce() {
+        mainThreadHandler?.removeCallbacks(searchRunnable)
+        mainThreadHandler?.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
@@ -224,7 +193,68 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setText(inputText)
     }
 
+    private fun searchSongs() {
+        if (inputEditText.text.toString().isNotEmpty()) {
+            arrayTrack.clear()
+            iTunesApiService.searchSongs(inputEditText.text.toString())
+                .enqueue(object : Callback<TrackResponseBody> {
+                    override fun onResponse(
+                        call: Call<TrackResponseBody>,
+                        response: Response<TrackResponseBody>,
+                    ) {
+                        if (response.code() == 200) {
+                            if (response.body()?.results?.isNotEmpty() == true) {
+                                arrayTrack.addAll(response.body()?.results!!)
+                                hideProblemsElement()
+                                trackAdapter.notifyDataSetChanged()
+                            } else {
+                                problemText.text = getString(R.string.textNotFound)
+                                refreshButton.visibility = View.GONE
+                                problemImage.setImageResource(R.drawable.not_found_tracks)
+                                problemImage.visibility = View.VISIBLE
+                                problemText.visibility = View.VISIBLE
+                                problemLinearLayout.visibility = View.VISIBLE
+                            }
+                        } else {
+                            showProblemWithInternet()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<TrackResponseBody>, t: Throwable) {
+                        showProblemWithInternet()
+                    }
+                })
+        }
+    }
+
+    private fun hideProblemsElement() {
+        problemImage.visibility = View.GONE
+        problemText.visibility = View.GONE
+        refreshButton.visibility = View.GONE
+        problemLinearLayout.visibility = View.GONE
+    }
+
+    private fun showProblemWithInternet() {
+        problemText.text = getString(R.string.textProblemWithInternet)
+        refreshButton.visibility = View.VISIBLE
+        problemImage.setImageResource(R.drawable.problem_with_internet)
+        problemImage.visibility = View.VISIBLE
+        problemText.visibility = View.VISIBLE
+        problemLinearLayout.visibility = View.VISIBLE
+    }
+
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            mainThreadHandler?.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+
     companion object {
         private val KEY_INPUT_TEXT = "inputText"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private  val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }

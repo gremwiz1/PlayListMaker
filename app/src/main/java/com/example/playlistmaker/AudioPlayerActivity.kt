@@ -108,7 +108,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     }
 
     private fun preparePlayer(url: String) {
-        timeToPlay.setText("00:00")
+        timeToPlay.setText(TIME_START)
         buttonPlay.setImageResource(R.drawable.button_play)
         mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
@@ -167,6 +167,9 @@ class AudioPlayerActivity : AppCompatActivity() {
                         val time = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
                         timeToPlay.setText(time)
                         mainThreadHandler?.postDelayed(this, REFRESH_LIST_DELAY_MILLIS)
+                        if(mediaPlayerState == State.PREPARED) {
+                            timeToPlay.setText(TIME_START)
+                        }
                     }
                 }, REFRESH_LIST_DELAY_MILLIS
             )
@@ -176,5 +179,6 @@ class AudioPlayerActivity : AppCompatActivity() {
     companion object {
         private val TRACK = "TRACK"
         private const val REFRESH_LIST_DELAY_MILLIS = 500L
+        private val TIME_START = "00:00"
     }
 }
