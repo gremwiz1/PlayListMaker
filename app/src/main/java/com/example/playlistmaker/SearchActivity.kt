@@ -249,7 +249,7 @@ class SearchActivity : AppCompatActivity() {
         problemLinearLayout.visibility = View.VISIBLE
     }
 
-    private fun clickDebounce() : Boolean {
+    private fun clickDebounce(): Boolean {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
@@ -261,6 +261,6 @@ class SearchActivity : AppCompatActivity() {
     companion object {
         private val KEY_INPUT_TEXT = "inputText"
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private  val CLICK_DEBOUNCE_DELAY = 1000L
+        private val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }
