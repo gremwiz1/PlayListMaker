@@ -223,13 +223,14 @@ class SearchActivity : AppCompatActivity() {
                         } else {
                             showProblemWithInternet()
                         }
+                        progressBar.visibility = View.GONE
                     }
 
                     override fun onFailure(call: Call<TrackResponseBody>, t: Throwable) {
+                        progressBar.visibility = View.GONE
                         showProblemWithInternet()
                     }
                 })
-            progressBar.visibility = View.GONE
         }
     }
 

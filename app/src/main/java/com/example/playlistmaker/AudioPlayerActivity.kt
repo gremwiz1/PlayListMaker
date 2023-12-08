@@ -123,16 +123,28 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
     }
 
-    fun startMediaPlayer() {
-        buttonPlay.setImageResource(R.drawable.button_pause)
-        mediaPlayer.start()
-        mediaPlayerState = State.PLAYING
+    private fun startMediaPlayer() {
+        try {
+            if (mediaPlayerState == State.PREPARED || mediaPlayerState == State.PAUSED) {
+                mediaPlayer.start()
+                mediaPlayerState = State.PLAYING
+                buttonPlay.setImageResource(R.drawable.button_pause)
+            }
+        } catch (e: Exception) {
+            Log.e("AudioPlayerActivity", "Ошибка при запуске mediaPlayer", e)
+        }
     }
 
-    fun pauseMediaPlayer() {
-        buttonPlay.setImageResource(R.drawable.button_play)
-        mediaPlayer.pause()
-        mediaPlayerState = State.PAUSED
+    private fun pauseMediaPlayer() {
+        try {
+            if (mediaPlayer.isPlaying) {
+                mediaPlayer.pause()
+                mediaPlayerState = State.PAUSED
+                buttonPlay.setImageResource(R.drawable.button_play)
+            }
+        } catch (e: Exception) {
+            Log.e("AudioPlayerActivity", "Ошибка при паузе mediaPlayer", e)
+        }
     }
 
     fun mediaPlayerControl() {
@@ -152,6 +164,15 @@ class AudioPlayerActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         pauseMediaPlayer()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (mediaPlayer.isPlaying) {
+            mediaPlayer.stop()
+        }
+        mediaPlayer.release()
+        mainThreadHandler?.removeCallbacksAndMessages(null) // Остановка обновления UI
     }
 
     override fun onDestroy() {
