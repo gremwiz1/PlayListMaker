@@ -23,6 +23,7 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         if (model.artworkUrl100 != null) {
             Glide.with(itemView)
                 .load(model.artworkUrl100)
+                .placeholder(R.drawable.placeholder)
                 .fitCenter()
                 .transform(RoundedCorners(10))
                 .into(imageTrack)

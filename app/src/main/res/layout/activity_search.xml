@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="@dimen/hotizontal_padding_16"
     android:background="?attr/colorPrimary"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/hotizontal_padding_16">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,6 +24,7 @@
             android:text="@string/search"
             android:textColor="?attr/colorPrimaryVariant"
             android:textSize="@dimen/text_size" />
+
     </LinearLayout>
 
     <FrameLayout
@@ -87,10 +88,19 @@
             android:text="@string/refresh"
             android:textColor="?attr/refreshButtonTextColor"
             android:textSize="@dimen/text_size_14"
+            android:textAllCaps="false"
             android:visibility="gone"
             app:cornerRadius="@dimen/corner_radius_56" />
 
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="@dimen/width_44dp"
+        android:layout_height="@dimen/height_44dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/blue"
+        android:visibility="gone" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
