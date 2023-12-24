@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.domain
 
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
@@ -10,6 +10,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.models.Track
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
@@ -50,12 +52,12 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(AudioPlayerActivity.TRACK, gson.toJson(track))
+        outState.putString(TRACK, gson.toJson(track))
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        val savedTrack = savedInstanceState.getString(AudioPlayerActivity.TRACK)
+        val savedTrack = savedInstanceState.getString(TRACK)
         setupUIWithTrack(gson.fromJson(savedTrack, Track::class.java))
 
     }
