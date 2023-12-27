@@ -22,12 +22,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.data.network.ITunesApiService
 import com.example.playlistmaker.domain.SearchHistory
 import com.example.playlistmaker.domain.api.TracksInteractor
 import com.example.playlistmaker.presentation.TrackAdapter
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
 
@@ -41,8 +38,6 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var clearHistoryButton: Button
     private lateinit var problemLinearLayout: LinearLayout
     private lateinit var arrayTrack: ArrayList<Track>
-    private lateinit var retrofit: Retrofit
-    private lateinit var iTunesApiService: ITunesApiService
     private var mainThreadHandler: Handler? = null
     private lateinit var searchRunnable: Runnable
     private lateinit var trackAdapter: TrackAdapter
@@ -53,13 +48,6 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-
-        retrofit = Retrofit.Builder()
-            .baseUrl(getString(R.string.base_url_itunes))
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        iTunesApiService = retrofit.create(ITunesApiService::class.java)
 
         progressBar = findViewById(R.id.progressBar)
         inputEditText = findViewById(R.id.inputEditText)
@@ -127,7 +115,6 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s.isNullOrEmpty()) {
-                    // linearLayout.setBackgroundColor(getColor(R.color.prime_neutral))
                     if (inputEditText.hasFocus() && searchHistory.getListHistoryTracks().size != 0) {
                         showHistoryTracks()
                     }
@@ -149,7 +136,6 @@ class SearchActivity : AppCompatActivity() {
 
         searchRunnable = Runnable { searchSongs() }
         mainThreadHandler = Handler(Looper.getMainLooper())
-        //добавляем созданный simpleTextWatcher к EditText
         inputEditText.addTextChangedListener(simpleTextWatcher)
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
