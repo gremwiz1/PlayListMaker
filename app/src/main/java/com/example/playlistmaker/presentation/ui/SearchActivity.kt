@@ -19,15 +19,13 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.data.dto.TrackResponseBody
 import com.example.playlistmaker.data.network.ITunesApiService
 import com.example.playlistmaker.domain.SearchHistory
+import com.example.playlistmaker.domain.api.TracksInteractor
 import com.example.playlistmaker.presentation.TrackAdapter
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -50,6 +48,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var trackAdapter: TrackAdapter
     private var isClickAllowed = true
     private lateinit var progressBar: ProgressBar
+    private val tracksInteractor = Creator.provideTracksInteractor()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -205,35 +204,29 @@ class SearchActivity : AppCompatActivity() {
     private fun searchSongs() {
         if (inputEditText.text.toString().isNotEmpty()) {
             progressBar.visibility = View.VISIBLE
-            arrayTrack.clear()
-            iTunesApiService.searchSongs(inputEditText.text.toString())
-                .enqueue(object : Callback<TrackResponseBody> {
-                    override fun onResponse(
-                        call: Call<TrackResponseBody>,
-                        response: Response<TrackResponseBody>,
-                    ) {
-                        if (response.code() == 200) {
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                arrayTrack.addAll(response.body()?.results!!)
-                                hideProblemsElement()
+            tracksInteractor.searchTracks(inputEditText.text.toString(),
+                object : TracksInteractor.TracksConsumer {
+                    override fun consume(foundTracks: List<Track>, isSuccessful: Boolean) {
+                        mainThreadHandler?.post {
+                            if (isSuccessful) {
+                                arrayTrack.clear()
+                                arrayTrack.addAll(foundTracks)
                                 trackAdapter.notifyDataSetChanged()
+                                if (arrayTrack.isEmpty()) {
+                                    problemText.text = getString(R.string.textNotFound)
+                                    refreshButton.visibility = View.GONE
+                                    problemImage.setImageResource(R.drawable.not_found_tracks)
+                                    problemImage.visibility = View.VISIBLE
+                                    problemText.visibility = View.VISIBLE
+                                    problemLinearLayout.visibility = View.VISIBLE
+                                } else {
+                                    hideProblemsElement()
+                                }
                             } else {
-                                problemText.text = getString(R.string.textNotFound)
-                                refreshButton.visibility = View.GONE
-                                problemImage.setImageResource(R.drawable.not_found_tracks)
-                                problemImage.visibility = View.VISIBLE
-                                problemText.visibility = View.VISIBLE
-                                problemLinearLayout.visibility = View.VISIBLE
+                                showProblemWithInternet()
                             }
-                        } else {
-                            showProblemWithInternet()
+                            progressBar.visibility = View.GONE
                         }
-                        progressBar.visibility = View.GONE
-                    }
-
-                    override fun onFailure(call: Call<TrackResponseBody>, t: Throwable) {
-                        progressBar.visibility = View.GONE
-                        showProblemWithInternet()
                     }
                 })
         }
