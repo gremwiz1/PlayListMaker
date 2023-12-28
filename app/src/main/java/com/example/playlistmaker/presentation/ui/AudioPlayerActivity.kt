@@ -1,16 +1,15 @@
-package com.example.playlistmaker.domain
+package com.example.playlistmaker.presentation.ui
 
-import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.impl.AudioPlayer
 import com.example.playlistmaker.domain.models.Track
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
@@ -18,16 +17,9 @@ import java.util.*
 
 
 class AudioPlayerActivity : AppCompatActivity() {
-    enum class State {
-        DEFAULT,
-        PREPARED,
-        PLAYING,
-        PAUSED
-    }
     private lateinit var track: Track
     private val gson = Gson()
-    val mediaPlayer = MediaPlayer()
-    private var mediaPlayerState  = State.DEFAULT
+    private val audioPlayer = AudioPlayer()
     private lateinit var buttonPlay: ImageView
     private lateinit var timeToPlay: TextView
     private var mainThreadHandler: Handler? = null
@@ -35,16 +27,18 @@ class AudioPlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_audio_player)
-        mainThreadHandler =  Handler(Looper.getMainLooper())
+        mainThreadHandler = Handler(Looper.getMainLooper())
         val trackJson = intent.getStringExtra("TrackExtra")
         track = gson.fromJson(trackJson, Track::class.java)
+
         buttonPlay = findViewById<ImageView>(R.id.button_play)
         timeToPlay = findViewById<TextView>(R.id.time_to_play)
         buttonPlay.isEnabled = false
         setupUIWithTrack(track)
+
         buttonPlay.setOnClickListener {
             mediaPlayerControl()
-            if(mediaPlayerState == State.PLAYING) {
+            if (audioPlayer.state == AudioPlayer.State.PLAYING) {
                 refreshText()
             }
         }
@@ -58,8 +52,10 @@ class AudioPlayerActivity : AppCompatActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         val savedTrack = savedInstanceState.getString(TRACK)
-        setupUIWithTrack(gson.fromJson(savedTrack, Track::class.java))
-
+        if (savedTrack != null) {
+            track = gson.fromJson(savedTrack, Track::class.java)
+            setupUIWithTrack(track)
+        }
     }
 
     private fun setupUIWithTrack(track: Track) {
@@ -112,85 +108,65 @@ class AudioPlayerActivity : AppCompatActivity() {
     private fun preparePlayer(url: String) {
         timeToPlay.setText(TIME_START)
         buttonPlay.setImageResource(R.drawable.button_play)
-        mediaPlayer.setDataSource(url)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
+        buttonPlay.isEnabled = false
+
+        audioPlayer.prepare(url)
+        audioPlayer.onPrepared = {
             buttonPlay.isEnabled = true
-            mediaPlayerState = State.PREPARED
+            updatePlayButtonIcon()
         }
 
-        mediaPlayer.setOnCompletionListener {
-            mediaPlayerState = State.PREPARED
-            buttonPlay.setImageResource(R.drawable.button_play)
-        }
-    }
-
-    private fun startMediaPlayer() {
-        try {
-            if (mediaPlayerState == State.PREPARED || mediaPlayerState == State.PAUSED) {
-                mediaPlayer.start()
-                mediaPlayerState = State.PLAYING
-                buttonPlay.setImageResource(R.drawable.button_pause)
-            }
-        } catch (e: Exception) {
-            Log.e("AudioPlayerActivity", "Ошибка при запуске mediaPlayer", e)
+        audioPlayer.onCompletion = {
+            updatePlayButtonIcon()
         }
     }
 
-    private fun pauseMediaPlayer() {
-        try {
-            if (mediaPlayer.isPlaying) {
-                mediaPlayer.pause()
-                mediaPlayerState = State.PAUSED
-                buttonPlay.setImageResource(R.drawable.button_play)
-            }
-        } catch (e: Exception) {
-            Log.e("AudioPlayerActivity", "Ошибка при паузе mediaPlayer", e)
+    private fun mediaPlayerControl() {
+        when (audioPlayer.state) {
+            AudioPlayer.State.PREPARED, AudioPlayer.State.PAUSED -> audioPlayer.play()
+            AudioPlayer.State.PLAYING -> audioPlayer.pause()
+            AudioPlayer.State.DEFAULT -> preparePlayer(track.previewUrl) // Повторная подготовка в случае DEFAULT
         }
+        updatePlayButtonIcon()
     }
 
-    fun mediaPlayerControl() {
-        when (mediaPlayerState) {
-            State.PREPARED, State.PAUSED -> {
-                startMediaPlayer()
-            }
-            State.PLAYING -> {
-                Log.i("MediaPlayerState", "Пауза")
-                pauseMediaPlayer()
-            }
-            else -> {
-                // Обработка других состояний
-            }
-    }}
+    private fun updatePlayButtonIcon() {
+        buttonPlay.setImageResource(
+            if (audioPlayer.state == AudioPlayer.State.PLAYING) R.drawable.button_pause
+            else R.drawable.button_play
+        )
+    }
 
     override fun onPause() {
         super.onPause()
-        pauseMediaPlayer()
+        audioPlayer.pause()
     }
 
     override fun onStop() {
         super.onStop()
-        if (mediaPlayer.isPlaying) {
-            mediaPlayer.stop()
-        }
-        mediaPlayer.release()
-        mainThreadHandler?.removeCallbacksAndMessages(null) // Остановка обновления UI
+        audioPlayer.stop()
+        mainThreadHandler?.removeCallbacksAndMessages(null)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer.release()
+        audioPlayer.release()
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     fun refreshText() {
         val newThread = Thread {
             mainThreadHandler?.postDelayed(
-                object: Runnable {
+                object : Runnable {
                     override fun run() {
-                        val time = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+                        val time = SimpleDateFormat("mm:ss",
+                            Locale.getDefault()).format(audioPlayer.currentPosition)
                         timeToPlay.setText(time)
                         mainThreadHandler?.postDelayed(this, REFRESH_LIST_DELAY_MILLIS)
-                        if(mediaPlayerState == State.PREPARED) {
+                        if (audioPlayer.state == AudioPlayer.State.PREPARED) {
                             timeToPlay.setText(TIME_START)
                         }
                     }
@@ -199,6 +175,7 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
         newThread.start()
     }
+
     companion object {
         private val TRACK = "TRACK"
         private const val REFRESH_LIST_DELAY_MILLIS = 500L
