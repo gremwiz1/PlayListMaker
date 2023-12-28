@@ -1,7 +1,6 @@
 package com.example.playlistmaker.presentation.ui
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -22,8 +21,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.domain.SearchHistory
 import com.example.playlistmaker.domain.api.TracksInteractor
+import com.example.playlistmaker.domain.impl.SearchHistoryManager
 import com.example.playlistmaker.presentation.TrackAdapter
 
 class SearchActivity : AppCompatActivity() {
@@ -38,16 +37,20 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var clearHistoryButton: Button
     private lateinit var problemLinearLayout: LinearLayout
     private lateinit var arrayTrack: ArrayList<Track>
+    private lateinit var trackAdapter: TrackAdapter
     private var mainThreadHandler: Handler? = null
     private lateinit var searchRunnable: Runnable
-    private lateinit var trackAdapter: TrackAdapter
     private var isClickAllowed = true
     private lateinit var progressBar: ProgressBar
+
     private val tracksInteractor = Creator.provideTracksInteractor()
+    private lateinit var searchHistoryManager: SearchHistoryManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
+        searchHistoryManager = SearchHistoryManager(this)
 
         progressBar = findViewById(R.id.progressBar)
         inputEditText = findViewById(R.id.inputEditText)
@@ -60,35 +63,19 @@ class SearchActivity : AppCompatActivity() {
         youSearchText = findViewById(R.id.you_search)
         clearHistoryButton = findViewById(R.id.clear_history)
 
-        val sharedPreferences: SharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
-        val searchHistory = SearchHistory(sharedPreferences)
-        arrayTrack = ArrayList<Track>()
+        arrayTrack = ArrayList()
         trackAdapter = TrackAdapter(arrayTrack) { clickedTrack ->
-            run {
-                if (clickDebounce()) {
-                    searchHistory.addTrackInHistory(this, clickedTrack)
-                }
+            if (clickDebounce()) {
+                searchHistoryManager.addTrackInHistoryAndNavigate(this, clickedTrack)
             }
         }
 
         val trackList = findViewById<RecyclerView>(R.id.trackList)
         trackList.layoutManager = LinearLayoutManager(this)
-
         trackList.adapter = trackAdapter
 
         arrowBackButton.setOnClickListener {
             finish()
-        }
-
-        fun showHistoryTracks() {
-            val historyTracks = searchHistory.getListHistoryTracks()
-            if (historyTracks.size > 0) {
-                arrayTrack.clear()
-                arrayTrack.addAll(historyTracks)
-                trackAdapter.notifyDataSetChanged()
-                clearHistoryButton.visibility = View.VISIBLE
-                youSearchText.visibility = View.VISIBLE
-            }
         }
 
         clearButton.setOnClickListener {
@@ -101,7 +88,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         clearHistoryButton.setOnClickListener {
-            searchHistory.clearListHistory()
+            searchHistoryManager.clearListHistory()
             arrayTrack.clear()
             trackAdapter.notifyDataSetChanged()
             clearHistoryButton.visibility = View.GONE
@@ -109,17 +96,14 @@ class SearchActivity : AppCompatActivity() {
         }
 
         val simpleTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // empty
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (s.isNullOrEmpty()) {
-                    if (inputEditText.hasFocus() && searchHistory.getListHistoryTracks().size != 0) {
+                    if (inputEditText.hasFocus()) {
                         showHistoryTracks()
                     }
                 } else {
-                    val input = s.toString()
                     arrayTrack.clear()
                     trackAdapter.notifyDataSetChanged()
                     clearHistoryButton.visibility = View.GONE
@@ -129,9 +113,7 @@ class SearchActivity : AppCompatActivity() {
                 clearButton.visibility = clearButtonVisibility(s)
             }
 
-            override fun afterTextChanged(s: Editable?) {
-                // empty
-            }
+            override fun afterTextChanged(s: Editable?) {}
         }
 
         searchRunnable = Runnable { searchSongs() }
@@ -140,19 +122,18 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 searchSongs()
-            }
-            false
-        }
-        inputEditText.setOnFocusChangeListener { view, hasFocus ->
-            if (hasFocus && inputEditText.text.isEmpty() && searchHistory.getListHistoryTracks().size != 0) {
-                showHistoryTracks()
+                true
             } else {
-                clearHistoryButton.visibility = View.GONE
-                youSearchText.visibility = View.GONE
-                arrayTrack.clear()
+                false
             }
         }
-        refreshButton.setOnClickListener() {
+        inputEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && inputEditText.text.isEmpty()) {
+                showHistoryTracks()
+            }
+        }
+
+        refreshButton.setOnClickListener {
             searchSongs()
         }
     }
@@ -163,28 +144,12 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else {
-            View.VISIBLE
-        }
+        return if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun hideKeyboard() {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm?.hideSoftInputFromWindow(inputEditText.windowToken, 0)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        val inputText = inputEditText.text.toString()
-        outState.putString(KEY_INPUT_TEXT, inputText)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        val inputText = savedInstanceState.getString(KEY_INPUT_TEXT)
-        inputEditText.setText(inputText)
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(inputEditText.windowToken, 0)
     }
 
     private fun searchSongs() {
@@ -199,12 +164,7 @@ class SearchActivity : AppCompatActivity() {
                                 arrayTrack.addAll(foundTracks)
                                 trackAdapter.notifyDataSetChanged()
                                 if (arrayTrack.isEmpty()) {
-                                    problemText.text = getString(R.string.textNotFound)
-                                    refreshButton.visibility = View.GONE
-                                    problemImage.setImageResource(R.drawable.not_found_tracks)
-                                    problemImage.visibility = View.VISIBLE
-                                    problemText.visibility = View.VISIBLE
-                                    problemLinearLayout.visibility = View.VISIBLE
+                                    displayNoResultsFound()
                                 } else {
                                     hideProblemsElement()
                                 }
@@ -216,6 +176,15 @@ class SearchActivity : AppCompatActivity() {
                     }
                 })
         }
+    }
+
+    private fun displayNoResultsFound() {
+        problemText.text = getString(R.string.textNotFound)
+        refreshButton.visibility = View.GONE
+        problemImage.setImageResource(R.drawable.not_found_tracks)
+        problemImage.visibility = View.VISIBLE
+        problemText.visibility = View.VISIBLE
+        problemLinearLayout.visibility = View.VISIBLE
     }
 
     private fun hideProblemsElement() {
@@ -234,6 +203,17 @@ class SearchActivity : AppCompatActivity() {
         problemLinearLayout.visibility = View.VISIBLE
     }
 
+    private fun showHistoryTracks() {
+        val historyTracks = searchHistoryManager.getListHistoryTracks()
+        if (historyTracks.isNotEmpty()) {
+            arrayTrack.clear()
+            arrayTrack.addAll(historyTracks)
+            trackAdapter.notifyDataSetChanged()
+            clearHistoryButton.visibility = View.VISIBLE
+            youSearchText.visibility = View.VISIBLE
+        }
+    }
+
     private fun clickDebounce(): Boolean {
         val current = isClickAllowed
         if (isClickAllowed) {
@@ -244,8 +224,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val KEY_INPUT_TEXT = "inputText"
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }

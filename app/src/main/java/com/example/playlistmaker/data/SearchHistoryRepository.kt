@@ -1,14 +1,11 @@
-package com.example.playlistmaker.domain
+package com.example.playlistmaker.data
 
-import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.presentation.ui.AudioPlayerActivity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class SearchHistory(private val sharedPreferences: SharedPreferences) {
+class SearchHistoryRepository(private val sharedPreferences: SharedPreferences) {
     private val gson = Gson()
     private val maxHistorySize = 10
 
@@ -22,29 +19,14 @@ class SearchHistory(private val sharedPreferences: SharedPreferences) {
         }
     }
 
-    fun addTrackInHistory(context: Context, track: Track) {
+    fun addTrackInHistory(track: Track) {
         val currentHistory = getHistoryTracks()
-
-        // Удаляем трек, если он уже есть в истории
         currentHistory.removeAll { it.trackId == track.trackId }
-
-        // Добавляем трек в начало списка
         currentHistory.add(0, track)
-
-        // Ограничиваем размер списка до 10
         while (currentHistory.size > maxHistorySize) {
             currentHistory.removeAt(currentHistory.size - 1)
         }
-
-        // Сохраняем измененный список в SharedPreferences
-        sharedPreferences.edit()
-            .putString(HISTORY_ARRAY_TRAKS, gson.toJson(currentHistory))
-            .apply()
-
-        val gson = Gson()
-        val intent = Intent(context, AudioPlayerActivity::class.java)
-        intent.putExtra("TrackExtra", gson.toJson(track))
-        context.startActivity(intent)
+        sharedPreferences.edit().putString(HISTORY_ARRAY_TRAKS, gson.toJson(currentHistory)).apply()
     }
 
     fun getListHistoryTracks(): ArrayList<Track> {
