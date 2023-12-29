@@ -1,11 +1,13 @@
 package com.example.playlistmaker.presentation.ui
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -20,10 +22,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.Creator
 import com.example.playlistmaker.R
+import com.example.playlistmaker.domain.api.ISearchHistoryManager
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.api.TracksInteractor
-import com.example.playlistmaker.domain.impl.SearchHistoryManager
 import com.example.playlistmaker.presentation.TrackAdapter
+import com.google.gson.Gson
 
 class SearchActivity : AppCompatActivity() {
 
@@ -44,13 +47,13 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
 
     private val tracksInteractor = Creator.provideTracksInteractor()
-    private lateinit var searchHistoryManager: SearchHistoryManager
+    private lateinit var searchHistoryManager: ISearchHistoryManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
 
-        searchHistoryManager = SearchHistoryManager(this)
+        searchHistoryManager = Creator.provideSearchHistoryManager()
 
         progressBar = findViewById(R.id.progressBar)
         inputEditText = findViewById(R.id.inputEditText)
@@ -66,7 +69,11 @@ class SearchActivity : AppCompatActivity() {
         arrayTrack = ArrayList()
         trackAdapter = TrackAdapter(arrayTrack) { clickedTrack ->
             if (clickDebounce()) {
-                searchHistoryManager.addTrackInHistoryAndNavigate(this, clickedTrack)
+                searchHistoryManager.addTrackInHistoryAndNavigate(clickedTrack)
+                val intent = Intent(this, AudioPlayerActivity::class.java).apply {
+                    putExtra("TrackExtra", Gson().toJson(clickedTrack))
+                }
+                startActivity(intent)
             }
         }
 

@@ -18,13 +18,15 @@ class RetrofitNetworkClient : NetworkClient {
     private val imdbService = retrofit.create(ITunesApiService::class.java)
 
     override fun doRequest(dto: Any): Response {
-        if (dto is TrackSearchRequest) {
-            val resp = imdbService.searchSongs(dto.expression).execute()
-
-            val body = resp.body() ?: Response()
-
-            return body.apply { resultCode = resp.code() }
-        } else {
+        try {
+            if (dto is TrackSearchRequest) {
+                val response = imdbService.searchSongs(dto.expression).execute()
+                val body = response.body() ?: Response()
+                return body.apply { resultCode = response.code() }
+            } else {
+                return Response().apply { resultCode = 400 }
+            }
+        } catch (e: Exception) {
             return Response().apply { resultCode = 400 }
         }
     }

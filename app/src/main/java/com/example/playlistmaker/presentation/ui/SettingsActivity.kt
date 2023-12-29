@@ -13,8 +13,8 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.playlistmaker.domain.App
-import com.example.playlistmaker.domain.App.Companion.IS_DARK_THEME
+import com.example.playlistmaker.presentation.App
+import com.example.playlistmaker.presentation.App.Companion.IS_DARK_THEME
 import com.example.playlistmaker.R
 import com.google.android.material.switchmaterial.SwitchMaterial
 
@@ -41,10 +41,11 @@ class SettingsActivity : AppCompatActivity() {
             try {
                 startActivity(emailIntent)
             } catch (e: ActivityNotFoundException) {
-                Toast.makeText(this, getString(R.string.not_apps_for_sent_email), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,
+                    getString(R.string.not_apps_for_sent_email),
+                    Toast.LENGTH_SHORT).show()
             }
         }
-
 
 
         val switchDarkMode = findViewById<SwitchMaterial>(R.id.themeSwitcher)
@@ -102,10 +103,13 @@ class SettingsActivity : AppCompatActivity() {
             if (shareIntent.resolveActivity(packageManager) != null) {
                 startActivity(shareIntent)
             } else {
-                Toast.makeText(this, getString(R.string.not_apps_for_share_link), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,
+                    getString(R.string.not_apps_for_share_link),
+                    Toast.LENGTH_SHORT).show()
             }
         }
     }
+
     companion object {
         const val KEY_IS_FIRST_RUN = "isFirstRun"
     }
